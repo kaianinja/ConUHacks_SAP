@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/7b145b1c64.js" crossorigin="anonymous"></script>
+</head>
+
+<style>
+    body
+    {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    p
+    {
+        all: unset;
+    }
+
+    #topBar
+    {
+        background-color: #000435;
+        color: white;
+        position: fixed;
+    }
+
+    #mainContainer, #processResponseCtn
+    {
+        width: 100vw;
+        position: relative;
+    }
+
+    .leftMainColumn
+    {
+        background-color: black;
+        color: white;
+        font-size: 2.25rem;
+        padding: 2rem 3rem;
+    }
+
+    #submitCsvIconCtn
+    {
+        cursor: pointer;
+        transition: 0.25s all ease-in-out;
+    }
+
+    #submitCsvIconCtn:hover
+    {
+        transform: scale(1.15);
+        color: #006600;
+    }
+
+    .processLineDescription
+    {
+        font-size: 1.25rem;
+    }
+
+    .processLineResponse
+    {
+        padding: 1rem;
+    }
+
+    .servicedLinkToMore, .turnedAwayLinkToMore
+    {
+        text-decoration: underline;
+        cursor: pointer;
+        transition: all ease-in-out 0.15s
+    }
+
+    .servicedLinkToMore:hover, .turnedAwayLinkToMore:hover
+    {
+        color: blue;
+    }
+
+    .overlay
+    {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        z-index: 2;
+    }
+
+    .vehiclesServicedDetailsCtn, .vehiclesTurnedAwayDetailsCtn
+    {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9;
+        background-color: white;
+        color: black;
+        font-size: 1.5rem;
+    }
+
+    .closeServicedForm, .closeTurnedAwayForm
+    {
+        cursor: pointer;
+        border-top: 1px solid red;
+        border-radius: 0 0 0.5rem 0.5rem;
+        color: red;
+        background-color: white;
+        transition: 0.25s all ease-in-out;
+    }
+    
+    .closeServicedForm:hover, .closeTurnedAwayForm:hover
+    {
+        background-color: red;
+        color: white;
+    }
+
+    .servicePopupTitle, .turnedAwayPopupTitle
+    {
+        background-color: black;
+        color: white;
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+
+
+</style>
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+
+        // Setting Content Height
+        var navHeight = $("#topBar").outerHeight();
+        if ($("#mainContainer").length > 0)
+        {
+            $("#mainContainer").css('height', 'calc(100vh - ' + navHeight + 'px)')
+            $("#mainContainer").css('top', navHeight);
+        }
+        if ($("#processResponseCtn").length > 0)
+        {
+            $("#processResponseCtn").css('height', 'calc(100vh - ' + navHeight + 'px)');
+            $("#processResponseCtn").css('top', navHeight);
+        }
+        // End of Content Height
+
+        // CSV File
+        // Listening for the click event on the main action button
+        $(".submitCsvIcon").on('click', () => {
+            console.log("CLICKED");
+            $("#csvFileInput").click();
+        });
+        // Displaying the name of the file
+        var fileName = null;
+        $("#csvFileInput").on('change', (e) => {
+            console.log("File Selected.")
+
+            try {
+                fileName = e.target.files[0].name;
+                console.log(fileName);
+                $("#selectedFileName").text(fileName);
+                $(".fileNotChosenCtn").addClass('d-none');
+                $(".fileChosenCtn").removeClass('d-none');
+            }
+            catch(error) {
+                console.log("User cancelled his choice.");
+            }
+        });
+        // End of CSV File
+
+        // Popups, more info for vehicle counts
+        $(".servicedLinkToMore").on('click', () => {
+            $(".overlay").removeClass('d-none');
+            $('.vehiclesServicedDetailsCtn').removeClass('d-none');
+            $('.vehiclesServicedDetailsCtn').addClass('d-flex');
+        });
+
+        $(".turnedAwayLinkToMore").on('click', () => {
+            $(".overlay").removeClass('d-none');
+            $('.vehiclesTurnedAwayDetailsCtn').removeClass('d-none');
+            $('.vehiclesTurnedAwayDetailsCtn').addClass('d-flex');
+        });
+
+        $(".closeServicedForm").on('click', () => {
+            $(".overlay").addClass('d-none');
+            $('.vehiclesServicedDetailsCtn').addClass('d-none');
+            $('.vehiclesServicedDetailsCtn').removeClass('d-flex');
+        });
+
+        $(".closeTurnedAwayForm").on('click', () => {
+            $(".overlay").addClass('d-none');
+            $('.vehiclesTurnedAwayDetailsCtn').addClass('d-none');
+            $('.vehiclesTurnedAwayDetailsCtn').removeClass('d-flex');
+        });
+
+    });
+</script>
+
+<body>
+
+    <section class="overlay d-none"></section>
+
+    <div id="topBar" class="d-flex justify-content-center align-items-center w-100">
+        <h1 class="p-3">ConUHacks SAP</h1>
+    </div>
+
+    {% if not PROCESSED_CSV %}
+    <form action="#" method="POST" enctype="multipart/form-data">
+        <div id="mainContainer" class="d-flex">
+            <div class="leftMainColumn d-flex justify-content-center align-items-center w-50">
+                <div class="d-flex" style="gap: 1rem;">
+                    <p>Insert appointment records in .csv format</p>
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="rightMainColumn d-flex justify-content-center align-items-center w-50">
+                <div class="fileNotChosenCtn d-flex flex-column justify-content-center align-items-center">
+                    <div id="submitCsvIconCtn" style="font-size: 5rem;">
+                        <i class="fa-solid fa-file-circle-plus submitCsvIcon"></i>
+                        <input type="file" id="csvFileInput" class="d-none" name="csvInput" accept=".csv">
+                    </div>
+                    <p id="addFileInstructions" style="font-size: 1rem;">Add your .csv file</p>
+                </div>
+                <div class="fileChosenCtn d-none d-flex flex-column justify-content-center align-items-center">
+                    <i class="fa-solid fa-file-arrow-down mb-3" style="font-size: 5rem;"></i>
+                    <p id="selectedFileName" style="font-size: 1rem;"></p>
+                    <button class="btn btn-dark btn-lg mt-3" type="submit">Process</button>
+                </div>
+            </div>
+        </div>
+    </form>
+    {% else %}
+    <form action="#" method="GET">
+        <div id="processResponseCtn" class="d-flex flex-column justify-content-center align-items-center">
+            <div class="d-flex flex-column justify-content-center align-items-center w-50" style="border: 1px solid black; border-radius: 0.5rem;">
+                <div class="d-flex w-100">
+                    <div class="d-flex justify-content-start align-items-center w-100 p-3" style="background-color: black; color: white; font-size: 1.25rem;">
+                        <p><b>Process Response</b> for '<i>{{CSV_FILENAME}}</i>'</p>
+                    </div>
+                </div>
+                <div class="w-100 processLineResponse" style="border-bottom: 2px solid black;"><p class="processLineDescription"><b>Revenue Generated</b>: <b style="color:#006600">${{REVENUE}}</b></p></div>
+                <div class="w-100 processLineResponse" style="border-bottom: 2px solid black;"><p class="processLineDescription"><b>Vehicles Serviced</b>: <b><span class="servicedLinkToMore">{{SERVICED_TOTAL_COUNT}} vehicles.</span></b></div>
+                <div class="w-100 processLineResponse" style="border-bottom: 2px solid black;">
+                    <p class="processLineDescription"><b>Vehicles Turned Away</b>: <b><span class="turnedAwayLinkToMore">{{TURNED_AWAY_TOTAL}} vehicles</span></b>, costing you -<b style="color:red;">${{LOST_REVENUE}}</b>.</p>
+                </div>
+                <!-- <div class="w-100 processLineResponse"><p class="processLineDescription"><b>Turn Away Reasons</b>: {{TURN_AWAY_REASONS['no_booth']}} due to non-available booths, {{TURN_AWAY_REASONS['out_of_hours']}} due to opening hours.</b></p></div> -->
+            </div>
+            <button class="btn btn-outline-primary mt-3" type="submit">Restart</button>
+        </div>
+        <div class="vehiclesServicedDetailsCtn flex-column d-none" style="border-radius: 0.5rem;">
+            <div class="d-flex flex-column">
+                <div class="w-100 d-flex justify-content-center align-items-center servicePopupTitle p-3 mb-3"><p><b>Total Serviced Vehicles: {{SERVICED_TOTAL_COUNT}}</b></p></div>
+                <div class="d-flex flex-column mb-3" style="gap: 2rem;">
+                    <p class="px-4"><b>{{SERVICED['compact']}}</b> Compact Cars</p>
+                    <p class="px-4"><b>{{SERVICED['medium']}}</b> Medium Cars</p>
+                    <p class="px-4"><b>{{SERVICED['full-size']}}</b> Full-Size Cars</p>
+                    <p class="px-4"><b>{{SERVICED['class 1 truck']}}</b> Class 1 Trucks</p>
+                    <p class="px-4"><b>{{SERVICED['class 2 truck']}}</b> Clas 2 Trucks</p>
+                </div>
+            </div>
+            <div class="closeServicedForm d-flex justify-content-center align-items-center w-100">
+                <p class="p-2" style="font-size: 1rem;">Close</p>
+            </div>
+        </div>
+        <div class="vehiclesTurnedAwayDetailsCtn flex-column d-none" style="border-radius: 0.5rem;">
+            <div class="d-flex flex-column">
+                <div class="w-100 d-flex justify-content-center align-items-center turnedAwayPopupTitle p-3 mb-3"><p><b>Total Vehicles Turned Away: {{TURNED_AWAY_TOTAL}}</b></p></div>
+                <div class="d-flex flex-column mb-3" style="gap: 2rem;">
+                    <p class="px-4"><b>{{TURNED_AWAY_COUNT['compact']}}</b> Compact Cars</p>
+                    <p class="px-4"><b>{{TURNED_AWAY_COUNT['medium']}}</b> Medium Cars</p>
+                    <p class="px-4"><b>{{TURNED_AWAY_COUNT['full-size']}}</b> Full-Size Cars</p>
+                    <p class="px-4"><b>{{TURNED_AWAY_COUNT['class 1 truck']}}</b> Class 1 Trucks</p>
+                    <p class="px-4"><b>{{TURNED_AWAY_COUNT['class 2 truck']}}</b> Class 2 Trucks</p>
+                </div>
+            </div>
+            <div class="closeTurnedAwayForm d-flex justify-content-center align-items-center w-100">
+                <p class="p-2" style="font-size: 1rem;">Close</p>
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</body>
+</html>
