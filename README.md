@@ -7,7 +7,7 @@
 #░░░╚═╝░░░╚══════╝╚═╝░░╚═╝╚═╝░░░░░╚═╝  ╚═╝░░╚══╝╚═╝╚═╝░░░░░╚═╝╚═════╝░░╚═════╝░╚═════╝░
 #──────▄▀▄─────▄▀▄         ----------------------------------------------------------
 #─────▄█░░▀▀▀▀▀░░█▄                            Team Members
-#─▄▄──█░░░░░░░░░░░█──▄▄  Sisagha Phimmasone | Mustafa Ahmad | Cleopatr-Aliak-Manoukian
+#─▄▄──█░░░░░░░░░░░█──▄▄  Sisagha Phimmasone | Mustafa Ahmad | Cleopatr-Aliak Manoukian
 #█▄▄█─█░░▀░░┬░░▀░░█─█▄▄█   ----------------------------------------------------------
 ```
 # ConUHacks SAP Scheduling Tool Final Submission
